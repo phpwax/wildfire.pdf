@@ -1,0 +1,46 @@
+<div class='printing_block'>
+<?
+$partial_paths = array(
+                      APP_DIR."view/".$controller."/%s%.html",
+                      APP_DIR."view/shared/%s%.html"
+                      );
+foreach((array)Autoloader::view_paths("plugin") as $path){
+  $partial_paths[] = $path.strtoupper($use_plugin).Inflections::camelize(str_replace("/","_",$controller),true)."Controller/%s%.html";
+  $partial_paths[] = $path."shared/%s%.html";
+}
+
+$grouping = array();
+$mods = CMSApplication::get_modules();
+foreach($form as $k=>$ele) if( (($g = $ele->group) || ($g = "details")) && $ele->editable && ($g = strtolower($g) ) ) $grouping[$g][$k] = $ele;
+
+WaxEvent::run('cms.edit.grouping', $grouping);
+if(($show_group = Request::param('group')) && isset($grouping[$show_group])) $grouping = array($show_group => $grouping[$show_group]);
+$counter = 0;
+?>
+  <?if(count($grouping)):?>
+    <?foreach($grouping as $name=>$fields):?>
+      <?$tabhash = Inflections::to_url($name);?>
+      <fieldset class='contents clearfix <?=$tabhash?>' id="<?=$tabhash?>" >
+
+        <?foreach($fields as $n=>$f):?>
+        <?
+        $nm = Inflections::to_url($n);
+        $field = $model->get_col($n);
+        $coltype = $model->columns[$n][0];
+        ?>
+        <div class='field field-<?=$nm?> field-<?=$tabhash?>-<?=$nm?> <?=$model_class?>-<?=$nm?> clearfix'>
+          <h3><?=Inflections::humanize($n)?></h3><br>
+          <?if($field->is_association):?>
+            <?=$model->humanize($n)?>
+          <?else:?>
+            <?=$model->$n?>
+          <?endif?>
+          <hr>
+        </div>
+        <?endforeach?>
+      </fieldset>
+
+    <?endforeach?>
+
+  <?endif?>
+</div>

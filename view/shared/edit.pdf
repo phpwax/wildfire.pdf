@@ -1,0 +1,10 @@
+<?
+header('Content-Disposition: attachment; filename="'.Inflections::underscore(strip_tags($model->title)).'.pdf"');
+if(!is_dir(PUBLIC_DIR."files/pdfs/")) mkdir(CACHE_DIR."pdfs/", 0777, true);
+$file = CACHE_DIR."pdfs/".md5(serialize($model->row)).".pdf";
+if(!is_readable($file)){
+  $command = '/usr/bin/xvfb-run -a -s "-screen 0 1024x768x16" /usr/bin/wkhtmltopdf --encoding utf-8 -s A4 -T 0mm -B 20mm -L 0mm -R 0mm "'.$server.$permalink.'.print?" '.$file;
+  shell_exec($command);
+}
+?>
+<?=file_get_contents($file);?>

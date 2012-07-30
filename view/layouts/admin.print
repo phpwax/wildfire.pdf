@@ -2,7 +2,6 @@
 <html lang="en" id="cms-<?=Inflections::underscore($display_name)?>" class="clearfix print-view-of-page">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<?=partial("_cf")?>
   <?$mods = CMSApplication::get_modules();?>
   <?foreach(Autoloader::$plugin_array as $plugin):?>
     <?
